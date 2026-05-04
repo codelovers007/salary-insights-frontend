@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-
-const API = "http://localhost:3000";
+const API = import.meta.env.VITE_API_URL;
 
 export default function Dashboard() {
   const [employees, setEmployees] = useState([]);
