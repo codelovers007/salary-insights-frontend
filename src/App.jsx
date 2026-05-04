@@ -64,6 +64,25 @@ export default function App() {
     return e.first_name + " " + e.last_name
   }
 
+  const handleEdit = (id) => {
+      // I need to render Edit Employee Form here to update employee
+  };
+
+  const handleDelete = async (id) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete?");
+    if (!confirmDelete) return;
+  
+    try {
+      await axios.delete(`${API}/employees/${id}`);
+
+      setEmployees((prev) => prev.filter((e) => e.id !== id));
+      alert("Employee deleted successfully");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to delete employee");
+    }
+  };
+
   return (
     <div style={{ padding: "20px", fontFamily: "Arial" }}>
       <h1>Employee Dashboard</h1>
@@ -126,7 +145,9 @@ export default function App() {
               <th>Job</th>
               <th>Country</th>
               <th>Salary</th>
+              <th>Actions</th>
             </tr>
+            
           </thead>
           <tbody>
             {employees.map((e) => (
@@ -135,6 +156,12 @@ export default function App() {
                 <td>{e.job_title}</td>
                 <td>{e.country}</td>
                 <td>{e.salary}</td>
+                <td>
+                  <div style={{ display: "flex", gap: "8px" }}>
+                    <button onClick={() => handleEdit(e.id)}>Edit</button>
+                    <button onClick={() => handleDelete(e.id)}>Delete</button>
+                  </div>
+                </td>
               </tr>
             ))}
           </tbody>
