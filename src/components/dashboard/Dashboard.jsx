@@ -137,6 +137,11 @@ export default function Dashboard() {
       <div>
         <h2>Employees</h2>
 
+        <div style={{ marginBottom: "10px" }}>
+          <button onClick={() => navigate("/create")}>
+            + Add Employee
+          </button>
+        </div>
         <table border="1" cellPadding="8" width="100%">
           <thead>
             <tr>

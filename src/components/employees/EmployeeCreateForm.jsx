@@ -5,16 +5,20 @@ import axios from "axios";
 
 const API = "http://localhost:3000";
 
-export default function EditPage() {
-  const { id } = useParams();
-  const [employee, setEmployee] = useState(null);
+export default function EmployeeCreateForm() {
   const [countries, setCountries] = useState([]);
   const [jobs, setJobs] = useState([]);
+	const [employee, setEmployee] = useState({
+    first_name: "",
+    last_name: "",
+    job_title: "",
+    country: "",
+    salary: ""
+  });
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchDropdowns();
-    fetchEmployee();
   }, []);
   
   const fetchDropdowns = async () => {
@@ -27,24 +31,21 @@ export default function EditPage() {
     setJobs(jRes.data);
   };
 
-  const fetchEmployee = async () => {
-    const res = await axios.get(`${API}/employees/${id}`);
-    setEmployee(res.data);
-  };
-
   const handleChange = (e) => {
     setEmployee({ ...employee, [e.target.name]: e.target.value });
   };
 
-  const handleUpdate = async () => {
-    await axios.put(`${API}/employees/${id}`, {
-      employee: employee,
-    });
-    navigate('/');
-    alert("Updated!");
+  const handleCreate = async () => {
+    try {
+      await axios.post(`${API}/employees`, {
+        employee: employee
+      });
+      alert("Employee created successfully");
+      navigate("/");
+    } catch (err) {
+      alert("Create failed");
+    }
   };
-
-  if (!employee) return <p>Loading...</p>;
 
   return (
     <div
@@ -55,7 +56,7 @@ export default function EditPage() {
         alignItems: "center"
       }}
     >
-      <h2>Edit Employee</h2>
+      <h2>Create New Employee</h2>
 
       <input
         name="first_name"
@@ -91,18 +92,18 @@ export default function EditPage() {
         ))}
       </select>
 
+			<input
+				name="salary"
+				value={employee.salary}
+				onChange={handleChange}
+				placeholder="Salary"
+			/>
 
-      <input
-        name="salary"
-        value={employee.salary}
-        onChange={handleChange}
-        placeholder="Salary"
-      />
+      <button onClick={handleCreate}>Create</button>
 
-      <button onClick={handleUpdate}>Update</button>
-      <button onClick={() => navigate("/")}>
-        ← Back to Dashboard
-      </button>
+			<button onClick={() => navigate("/")}>
+				← Back to Dashboard
+			</button>
     </div>
   );
 }
