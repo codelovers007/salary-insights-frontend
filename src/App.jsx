@@ -5,6 +5,8 @@ const API = "http://localhost:3000";
 
 export default function App() {
   const [employees, setEmployees] = useState([]);
+  const [countries, setCountries] = useState([]);
+  const [jobs, setJobs] = useState([]);
   const [country, setCountry] = useState("");
   const [job, setJob] = useState("");
   const [stats, setStats] = useState(null);
@@ -19,6 +21,21 @@ export default function App() {
     } catch (err) {
       console.error(err);
     }
+  };
+
+  // Fetch dropdown data
+  useEffect(() => {
+    fetchDropdownData();
+  }, []);
+
+  const fetchDropdownData = async () => {
+    const [cRes, jRes] = await Promise.all([
+      axios.get(`${API}/dropdowns/countries`),
+      axios.get(`${API}/dropdowns/job_titles`)
+    ]);
+
+    setCountries(cRes.data);
+    setJobs(jRes.data);
   };
 
   useEffect(() => {
@@ -55,14 +72,14 @@ export default function App() {
       <div style={{ marginBottom: "30px" }}>
         <h2>Country Salary Insights</h2>
 
-        <input
-          placeholder="Country"
-          value={country}
-          onChange={(e) => setCountry(e.target.value)}
-          style={{ marginRight: "10px" }}
-        />
+        <select value={country} onChange={(e) => setCountry(e.target.value)}>
+          <option value="">Select Country</option>
+          {countries.map((c) => (
+            <option key={c} value={c}>{c}</option>
+          ))}
+        </select>
 
-        <button onClick={fetchCountryStats}>Submit</button>
+        <button style={{ marginLeft: "10px" }} onClick={fetchCountryStats}>Submit</button>
 
         {stats && (
           <div style={{ marginTop: "10px" }}>
@@ -75,21 +92,21 @@ export default function App() {
         <hr />
 
         <h2>Job Average Salary Insights</h2>
-        <input
-          placeholder="Job Country"
-          value={jobCountry}
-          onChange={(e) => setJobCountry(e.target.value)}
-          style={{ marginRight: "10px" }}
-        />
+        <select value={jobCountry} onChange={(e) => setJobCountry(e.target.value)}>
+          <option value="">Select Job Country</option>
+          {countries.map((c) => (
+            <option key={c} value={c}>{c}</option>
+          ))}
+        </select>
 
-        <input
-          placeholder="Job Title"
-          value={job}
-          onChange={(e) => setJob(e.target.value)}
-          style={{ marginRight: "10px" }}
-        />
+        <select style={{ marginLeft: "10px" }} value={job} disabled={!jobCountry} onChange={(e) => setJob(e.target.value)}>
+          <option value="">Select Job</option>
+          {jobs.map((j) => (
+            <option key={j} value={j}>{j}</option>
+          ))}
+        </select>
 
-        <button onClick={fetchJobAvg}>Submit</button>
+        <button style={{ marginLeft: "10px" }} onClick={fetchJobAvg}>Submit</button>
 
         {jobAvg && (
           <p style={{ marginTop: "10px" }}>
