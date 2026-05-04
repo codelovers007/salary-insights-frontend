@@ -13,6 +13,7 @@ export default function Dashboard() {
   const [stats, setStats] = useState(null);
   const [jobAvg, setJobAvg] = useState(null);
   const [jobCountry, setJobCountry] = useState("");
+  const [allEmpButton, setAllEmpButton] = useState(false);
   const navigate = useNavigate();
 
   // Fetch employees
@@ -63,8 +64,25 @@ export default function Dashboard() {
     return e.first_name + " " + e.last_name
   }
 
+  const handleView = (id) => {
+    navigate(`/view/${id}`);
+  };
+
   const handleEdit = (id) => {
     navigate(`/edit/${id}`);
+  };
+
+  const filterEmployees = () => {
+    topPaidEmployees();
+    setAllEmpButton(true);
+  }
+
+  // Fetch country stats
+  const topPaidEmployees = async () => {
+    const res = await axios.get(
+      `${API}/insights/top_paid`
+    );
+    setEmployees(res.data);
   };
 
   const handleDelete = async (id) => {
@@ -142,6 +160,22 @@ export default function Dashboard() {
             + Add Employee
           </button>
         </div>
+
+        <div style={{ marginBottom: "10px" }}>
+          <button onClick={() => filterEmployees()}>
+            Top 10 Paid Employees
+          </button>
+
+          { allEmpButton && <button style={{ marginLeft: "10px" }} 
+            onClick={() => {
+              fetchEmployees();
+              setAllEmpButton(false);
+            }}
+          >
+            All Employees
+          </button>}
+
+        </div>
         <table border="1" cellPadding="8" width="100%">
           <thead>
             <tr>
@@ -162,6 +196,7 @@ export default function Dashboard() {
                 <td>{e.salary}</td>
                 <td>
                   <div style={{ display: "flex", gap: "8px" }}>
+                    <button onClick={() => handleView(e.id)}>View</button>
                     <button onClick={() => handleEdit(e.id)}>Edit</button>
                     <button onClick={() => handleDelete(e.id)}>Delete</button>
                   </div>
